@@ -1,17 +1,15 @@
 package com.udacity.course3.reviews.controller;
 
-import com.udacity.course3.reviews.domain.Product;
-import com.udacity.course3.reviews.domain.Review;
+import com.udacity.course3.reviews.domain.*;
 import com.udacity.course3.reviews.model.ReviewDto;
-import com.udacity.course3.reviews.repository.ProductRepository;
-import com.udacity.course3.reviews.repository.ReviewRepository;
+import com.udacity.course3.reviews.repository.*;
+import com.udacity.course3.reviews.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 /**
  * Spring REST controller for working with review entity.
@@ -23,11 +21,15 @@ public class ReviewsController {
 
     private final ReviewRepository reviewRepository;
 
+    private final PolyglotService polyglotService;
+
     @Autowired
     public ReviewsController(ProductRepository productRepository,
-                             ReviewRepository reviewRepository) {
+                             ReviewRepository reviewRepository,
+                             PolyglotService polyglotService) {
         this.reviewRepository = reviewRepository;
         this.productRepository = productRepository;
+        this.polyglotService = polyglotService;
     }
 
     /**
@@ -58,6 +60,9 @@ public class ReviewsController {
             value.getReviews().add(review);
 
             productRepository.saveAndFlush(value);
+
+            // MongoDB
+            this.polyglotService.createReviewMongo(review);
 
             return new ResponseEntity<>(review, HttpStatus.CREATED);
         }

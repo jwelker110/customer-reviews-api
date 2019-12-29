@@ -1,10 +1,9 @@
 package com.udacity.course3.reviews.controller;
 
-import com.udacity.course3.reviews.domain.Comment;
-import com.udacity.course3.reviews.domain.Review;
+import com.udacity.course3.reviews.domain.*;
 import com.udacity.course3.reviews.model.CommentDto;
-import com.udacity.course3.reviews.repository.CommentRepository;
-import com.udacity.course3.reviews.repository.ReviewRepository;
+import com.udacity.course3.reviews.repository.*;
+import com.udacity.course3.reviews.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -25,11 +24,15 @@ public class CommentsController {
 
     private final ReviewRepository reviewRepository;
 
+    private final PolyglotService polyglotService;
+
     @Autowired
     public CommentsController(CommentRepository commentRepository,
-                             ReviewRepository reviewRepository) {
+                              ReviewRepository reviewRepository,
+                              PolyglotService polyglotService) {
         this.reviewRepository = reviewRepository;
         this.commentRepository = commentRepository;
+        this.polyglotService = polyglotService;
     }
 
     /**
@@ -48,7 +51,7 @@ public class CommentsController {
         Optional<Review> review = reviewRepository.findById(reviewId);
 
         if (review.isPresent()) {
-            Review value = review.get();
+            final Review value = review.get();
 
             Comment comment = new Comment();
             comment.setAuthorName(commentDto.getAuthorName());
@@ -59,6 +62,9 @@ public class CommentsController {
             review.get().getComments().add(comment);
 
             reviewRepository.saveAndFlush(value);
+
+            // MongoDB
+            this.polyglotService.createCommentMongo(comment);
 
             return new ResponseEntity<>(comment, HttpStatus.CREATED);
         }

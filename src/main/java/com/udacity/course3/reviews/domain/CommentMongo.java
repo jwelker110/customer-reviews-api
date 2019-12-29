@@ -1,17 +1,19 @@
-package com.udacity.course3.reviews.model;
+package com.udacity.course3.reviews.domain;
 
-public class CommentDto {
+public class CommentMongo {
+
+    private Integer id;
 
     private String content;
 
     private String authorName;
 
-    public CommentDto() {
+    public Integer getId() {
+        return id;
     }
 
-    public CommentDto(String content, String authorName) {
-        this.content = content;
-        this.authorName = authorName;
+    public void setId(Integer id) {
+        this.id = id;
     }
 
     public String getContent() {

@@ -1,15 +1,15 @@
 package com.udacity.course3.reviews.controller;
 
-import com.udacity.course3.reviews.domain.Product;
+import com.udacity.course3.reviews.domain.*;
 import com.udacity.course3.reviews.model.ProductDto;
-import com.udacity.course3.reviews.repository.ProductRepository;
+import com.udacity.course3.reviews.repository.*;
+import com.udacity.course3.reviews.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 /**
  * Spring REST controller for working with product entity.
@@ -20,9 +20,13 @@ public class ProductsController {
 
     private final ProductRepository productRepository;
 
+    private final PolyglotService polyglotService;
+
     @Autowired
-    public ProductsController(ProductRepository productRepository) {
+    public ProductsController(ProductRepository productRepository,
+                              PolyglotService polyglotService) {
         this.productRepository = productRepository;
+        this.polyglotService = polyglotService;
     }
 
     /**
@@ -37,7 +41,10 @@ public class ProductsController {
         Product product = new Product();
         product.setName(productDto.getName());
 
-        productRepository.save(product);
+        product = productRepository.save(product);
+
+        // MongoDB
+        this.polyglotService.createProductMongo(product);
     }
 
     /**
