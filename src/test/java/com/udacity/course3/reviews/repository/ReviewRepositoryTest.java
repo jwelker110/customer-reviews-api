@@ -1,25 +1,18 @@
 package com.udacity.course3.reviews.repository;
 
-import com.udacity.course3.reviews.domain.Comment;
-import com.udacity.course3.reviews.domain.Product;
-import com.udacity.course3.reviews.domain.Review;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
-import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.test.context.junit4.SpringRunner;
+import com.udacity.course3.reviews.domain.*;
+import org.junit.*;
+import org.junit.runner.*;
+import org.springframework.beans.factory.annotation.*;
+import org.springframework.boot.test.autoconfigure.orm.jpa.*;
+import org.springframework.jdbc.core.*;
+import org.springframework.test.context.junit4.*;
 
-import javax.persistence.EntityManager;
-import javax.sql.DataSource;
+import javax.persistence.*;
+import javax.sql.*;
+import java.util.*;
 
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
-
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.*;
 
 @RunWith(SpringRunner.class)
 @DataJpaTest

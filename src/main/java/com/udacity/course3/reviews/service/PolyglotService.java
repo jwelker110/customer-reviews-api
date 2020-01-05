@@ -2,12 +2,12 @@ package com.udacity.course3.reviews.service;
 
 import com.udacity.course3.reviews.domain.*;
 
-public interface PolyglotService {
+import java.util.*;
 
-    ProductMongo createProductMongo(Product product);
+public interface PolyglotService {
 
     ReviewMongo createReviewMongo(Review review);
 
-    CommentMongo createCommentMongo(Comment comment);
+    List<ReviewMongo> getReviewMongoListForProduct(Integer productId);
 
 }

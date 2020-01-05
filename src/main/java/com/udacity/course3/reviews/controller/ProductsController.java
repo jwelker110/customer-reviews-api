@@ -41,10 +41,7 @@ public class ProductsController {
         Product product = new Product();
         product.setName(productDto.getName());
 
-        product = productRepository.save(product);
-
-        // MongoDB
-        this.polyglotService.createProductMongo(product);
+        productRepository.save(product);
     }
 
     /**

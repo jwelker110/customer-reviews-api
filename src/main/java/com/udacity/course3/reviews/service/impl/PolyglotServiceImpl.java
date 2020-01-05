@@ -11,77 +11,50 @@ import java.util.*;
 @Service
 public class PolyglotServiceImpl implements PolyglotService {
 
-    private final ProductRepositoryMongo productRepositoryMongo;
+    private final ReviewRepositoryMongo reviewRepositoryMongo;
+
+    private final ReviewRepository reviewRepository;
 
     @Autowired
-    public PolyglotServiceImpl(ProductRepositoryMongo productRepositoryMongo) {
-        this.productRepositoryMongo = productRepositoryMongo;
-    }
-
-    /**
-     * Using this to check whether the Product SQL Entity has already been saved in the MongoDB collection. Ideally, all
-     * SQL Entities will already be saved in the MongoDB collection, but this should let us be more confident in that
-     * assertion.
-     */
-    private ProductMongo createProductMongoIfNotExists(Product product) {
-        return this.productRepositoryMongo.findBySqlId(product.getId())
-                .orElseGet(() -> this.createProductMongo(product));
-    }
-
-    @Override
-    public ProductMongo createProductMongo(Product product) {
-        ProductMongo newProduct = new ProductMongo();
-        newProduct.setSqlId(product.getId());
-        newProduct.setName(product.getName());
-        newProduct.setReviews(Collections.emptyList());
-
-        return this.productRepositoryMongo.save(newProduct);
+    public PolyglotServiceImpl(ReviewRepository reviewRepository,
+                               ReviewRepositoryMongo reviewRepositoryMongo) {
+        this.reviewRepository = reviewRepository;
+        this.reviewRepositoryMongo = reviewRepositoryMongo;
     }
 
     @Override
     public ReviewMongo createReviewMongo(Review review) {
-        ProductMongo productMongo = this.createProductMongoIfNotExists(review.getProduct());
+        ReviewMongo reviewMongo = new ReviewMongo();
 
-        ReviewMongo newReview = new ReviewMongo();
-        newReview.setId(review.getId());
-        newReview.setAuthorName(review.getAuthorName());
-        newReview.setContent(review.getContent());
-        newReview.setComments(Collections.emptyList());
+        reviewMongo.setProductId(review.getProduct().getId());
+        reviewMongo.setSqlId(review.getId());
+        reviewMongo.setContent(review.getContent());
+        reviewMongo.setAuthorName(review.getAuthorName());
+        reviewMongo.setComments(new ArrayList<>());
 
-        productMongo.getReviews().add(newReview);
+        for (Comment c : review.getComments()) {
+            CommentMongo newComment = new CommentMongo();
+            newComment.setContent(c.getContent());
+            newComment.setAuthorName(c.getAuthorName());
+            newComment.setId(c.getId());
 
-        this.productRepositoryMongo.save(productMongo);
+            reviewMongo.getComments().add(newComment);
+        }
 
-        return newReview;
+        return reviewRepositoryMongo.save(reviewMongo);
     }
 
     @Override
-    public CommentMongo createCommentMongo(Comment comment) {
-        ProductMongo productMongo = this.createProductMongoIfNotExists(comment.getReview().getProduct());
+    public List<ReviewMongo> getReviewMongoListForProduct(Integer productId) {
+        List<Review> reviews = reviewRepository.findAllByProductId(productId);
+        List<ReviewMongo> reviewMongos = new ArrayList<>();
 
-        if (productMongo.getReviews().isEmpty()) {
-            ReviewMongo newReview = new ReviewMongo();
-            newReview.setId(comment.getReview().getId());
-            newReview.setAuthorName(comment.getReview().getAuthorName());
-            newReview.setContent(comment.getReview().getContent());
-            newReview.setComments(Collections.emptyList());
-            productMongo.getReviews().add(newReview);
+        for (Review r : reviews) {
+            Optional<ReviewMongo> reviewMongo = reviewRepositoryMongo.findBySqlId(r.getId());
+
+            reviewMongo.ifPresent(reviewMongos::add);
         }
 
-        CommentMongo newComment = new CommentMongo();
-        newComment.setId(comment.getId());
-        newComment.setAuthorName(comment.getAuthorName());
-        newComment.setContent(comment.getContent());
-
-        for (ReviewMongo r : productMongo.getReviews()) {
-            if (r.getId().equals(comment.getReview().getId())) {
-                r.getComments().add(newComment);
-                break;
-            }
-        }
-
-        this.productRepositoryMongo.save(productMongo);
-
-        return newComment;
+        return reviewMongos;
     }
 }

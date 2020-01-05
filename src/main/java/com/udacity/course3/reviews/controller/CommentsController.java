@@ -63,9 +63,6 @@ public class CommentsController {
 
             reviewRepository.saveAndFlush(value);
 
-            // MongoDB
-            this.polyglotService.createCommentMongo(comment);
-
             return new ResponseEntity<>(comment, HttpStatus.CREATED);
         }
 

@@ -77,8 +77,8 @@ public class ReviewsController {
      * @return The list of reviews.
      */
     @RequestMapping(value = "/reviews/products/{productId}", method = RequestMethod.GET)
-    public ResponseEntity<List<Review>> listReviewsForProduct(@PathVariable("productId") Integer productId) {
-        List<Review> reviews = reviewRepository.findAllByProductId(productId);
+    public ResponseEntity<List<ReviewMongo>> listReviewsForProduct(@PathVariable("productId") Integer productId) {
+        List<ReviewMongo> reviews = polyglotService.getReviewMongoListForProduct(productId);
 
         return new ResponseEntity<>(reviews, HttpStatus.OK);
     }
