@@ -63,6 +63,8 @@ public class CommentsController {
 
             reviewRepository.saveAndFlush(value);
 
+            polyglotService.addCommentToReview(reviewId, comment);
+
             return new ResponseEntity<>(comment, HttpStatus.CREATED);
         }
 

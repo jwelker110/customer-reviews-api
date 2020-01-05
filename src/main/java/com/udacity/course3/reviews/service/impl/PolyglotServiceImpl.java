@@ -32,15 +32,6 @@ public class PolyglotServiceImpl implements PolyglotService {
         reviewMongo.setAuthorName(review.getAuthorName());
         reviewMongo.setComments(new ArrayList<>());
 
-        for (Comment c : review.getComments()) {
-            CommentMongo newComment = new CommentMongo();
-            newComment.setContent(c.getContent());
-            newComment.setAuthorName(c.getAuthorName());
-            newComment.setId(c.getId());
-
-            reviewMongo.getComments().add(newComment);
-        }
-
         return reviewRepositoryMongo.save(reviewMongo);
     }
 
@@ -56,5 +47,26 @@ public class PolyglotServiceImpl implements PolyglotService {
         }
 
         return reviewMongos;
+    }
+
+    @Override
+    public CommentMongo addCommentToReview(Integer reviewId, Comment comment) {
+        Optional<ReviewMongo> reviewMongo = reviewRepositoryMongo.findBySqlId(reviewId);
+        CommentMongo newComment = null;
+
+        if (reviewMongo.isPresent()) {
+            ReviewMongo review = reviewMongo.get();
+
+            newComment = new CommentMongo();
+            newComment.setContent(comment.getContent());
+            newComment.setAuthorName(comment.getAuthorName());
+            newComment.setId(comment.getId());
+
+            review.getComments().add(newComment);
+
+            reviewRepositoryMongo.save(review);
+        }
+
+        return newComment;
     }
 }

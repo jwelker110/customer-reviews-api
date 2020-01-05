@@ -10,4 +10,5 @@ public interface PolyglotService {
 
     List<ReviewMongo> getReviewMongoListForProduct(Integer productId);
 
+    CommentMongo addCommentToReview(Integer reviewId, Comment comment);
 }

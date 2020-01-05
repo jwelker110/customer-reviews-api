@@ -62,7 +62,7 @@ public class ReviewsController {
             productRepository.saveAndFlush(value);
 
             // MongoDB
-            this.polyglotService.createReviewMongo(review);
+            polyglotService.createReviewMongo(review);
 
             return new ResponseEntity<>(review, HttpStatus.CREATED);
         }
